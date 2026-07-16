@@ -120,6 +120,7 @@ export class AccountController {
   static getProfile = async (request: AuthRequest, response: Response) => {
     try {
       const { id } = request.params;
+
       const account = await AccountService.getProfile(id);
       if (!account) {
         response.status(404).send("Account not found");
