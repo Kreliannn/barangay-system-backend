@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../types/request.type";
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
+import { AccountService } from "../services/acccount.service";
+import { accountInterface } from "../types/accounts.type";
 
 dotenv.config();
 
@@ -9,7 +11,7 @@ const secret = process.env.JWT_SECRET || "defaultsecret";
 
 
 
-export const authenticateJWT = (request: AuthRequest, response: Response, next: NextFunction) => {
+export const authenticateJWT = async (request: AuthRequest, response: Response, next: NextFunction) => {
   const authHeader = request.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -23,7 +25,21 @@ export const authenticateJWT = (request: AuthRequest, response: Response, next: 
   try {
     const decoded = jwt.verify(token, secret);
     const { id } = decoded as { id: string };
-    request.id = id;
+    const accountDoc = await AccountService.get(id);
+    
+    if (accountDoc) {
+      const account: accountInterface = {
+        _id: accountDoc._id.toString(),
+        name: accountDoc.name,
+        address: accountDoc.address,
+        email: accountDoc.email,
+        password: accountDoc.password,
+        status :  accountDoc.status,
+        idImg :  accountDoc.idImg!,
+        skills : accountDoc.skills
+      };
+      request.account = account;
+    }
     next();
   } catch (err) {
     console.log(err)

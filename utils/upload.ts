@@ -18,3 +18,10 @@ const storage = multer.diskStorage({
 });
 
 export const upload = multer({ storage });
+
+// Multer middleware that accepts 3 ID image files: front, back, selfie
+export const uploadIdImages = upload.fields([
+  { name: 'idFront', maxCount: 1 },
+  { name: 'idBack', maxCount: 1 },
+  { name: 'idSelfie', maxCount: 1 },
+]);

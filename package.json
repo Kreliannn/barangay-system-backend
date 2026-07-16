@@ -13,6 +13,7 @@
   "description": "",
   "dependencies": {
     "@types/mongoose": "^5.11.96",
+    "bcrypt": "^6.0.0",
     "cloudinary": "^2.8.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -23,6 +24,7 @@
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.10",

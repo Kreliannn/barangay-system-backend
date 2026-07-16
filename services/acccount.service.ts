@@ -5,11 +5,11 @@ import { accountInterface, accountInterfaceInput } from "../types/accounts.type"
 export class AccountService {
 
   static async create(data : accountInterfaceInput) {
-    await AccountModel.create(data)
+    return await AccountModel.create(data)
   }
 
-  static async getAll() {
-    const accounts = AccountModel.find();
+  static async getAll(filter: Record<string, any> = {}) {
+    const accounts = AccountModel.find(filter).select('-password');
     return accounts
   }
 
@@ -23,14 +23,27 @@ export class AccountService {
     return account
   }
 
-  static async update(id : string, data : accountInterface) {
-    await AccountModel.findByIdAndUpdate(id, data);
+  static async update(id : string, data : Partial<accountInterface>) {
+    return await AccountModel.findByIdAndUpdate(id, data, { new: true });
+  }
+
+  static async updateStatus(id: string, status: string) {
+    return await AccountModel.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
   }
 
   static async findByLogin(username : string, password : string) {
     const account = AccountModel.findOne({ username , password });
     return account
   }
+
+  static async checkEmailIfExist(email : string) {
+    const account = AccountModel.findOne({ email });
+    return account
+  } 
 
 
 }
