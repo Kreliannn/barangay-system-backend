@@ -30,7 +30,9 @@ export const authenticateJWT = async (request: AuthRequest, response: Response, 
     if (accountDoc) {
       const account: accountInterface = {
         _id: accountDoc._id.toString(),
+        profile : accountDoc.profile,
         name: accountDoc.name,
+        contact: accountDoc.contact,
         address: accountDoc.address,
         email: accountDoc.email,
         password: accountDoc.password,

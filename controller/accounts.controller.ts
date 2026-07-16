@@ -117,6 +117,154 @@ export class AccountController {
     }
   }
 
+  static getProfile = async (request: AuthRequest, response: Response) => {
+    try {
+      const { id } = request.params;
+      const account = await AccountService.getProfile(id);
+      if (!account) {
+        response.status(404).send("Account not found");
+        return;
+      }
+      response.send(account);
+    } catch (error) {
+      response.status(500).send("Failed to fetch profile");
+    }
+  }
+
+  static addSkill = async (request: AuthRequest, response: Response) => {
+    try {
+      const { id } = request.params;
+      const { skill, experience, proficiency } = request.body;
+
+      if (!skill || experience === undefined || !proficiency) {
+        response.status(400).send("All fields are required: skill, experience, proficiency");
+        return;
+      }
+
+      const account = await AccountService.addSkill(id, {
+        skill,
+        experience: Number(experience),
+        proficiency,
+      });
+
+      if (!account) {
+        response.status(404).send("Account not found");
+        return;
+      }
+
+      response.send(account);
+    } catch (error) {
+      response.status(500).send("Failed to add skill");
+    }
+  }
+
+  static removeSkill = async (request: AuthRequest, response: Response) => {
+    try {
+      const { id, skillId } = request.params;
+
+      const account = await AccountService.removeSkill(id, skillId);
+
+      if (!account) {
+        response.status(404).send("Account not found");
+        return;
+      }
+
+      response.send(account);
+    } catch (error) {
+      response.status(500).send("Failed to remove skill");
+    }
+  }
+
+  static uploadProfilePic = async (request: AuthRequest, response: Response) => {
+    try {
+      const { id } = request.params;
+
+      if (!request.file) {
+        response.status(400).send("No profile image provided");
+        return;
+      }
+
+      const account = await AccountService.get(id);
+      if (!account) {
+        response.status(404).send("Account not found");
+        return;
+      }
+
+      const profilePicUrl = await uploadToCloudinary(request.file.path);
+
+      const updated = await AccountService.update(id, {
+        profile: profilePicUrl,
+      });
+
+      response.send(updated);
+    } catch (error) {
+      response.status(500).send("Failed to upload profile picture");
+    }
+  }
+
+  static updateInfo = async (request: AuthRequest, response: Response) => {
+    try {
+      const { id } = request.params;
+      const { name, address, contact } = request.body;
+
+      if (!name && !address && !contact) {
+        response.status(400).send("No fields to update");
+        return;
+      }
+
+      const updateData: Record<string, string> = {};
+      if (name) updateData.name = name;
+      if (address) updateData.address = address;
+      if (contact) updateData.contact = contact;
+
+      const account = await AccountService.update(id, updateData);
+      if (!account) {
+        response.status(404).send("Account not found");
+        return;
+      }
+
+      response.send(account);
+    } catch (error) {
+      response.status(500).send("Failed to update profile");
+    }
+  }
+
+  static changePassword = async (request: AuthRequest, response: Response) => {
+    try {
+      const { id } = request.params;
+      const { oldPassword, newPassword } = request.body;
+
+      if (!oldPassword || !newPassword) {
+        response.status(400).send("Old password and new password are required");
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        response.status(400).send("New password must be at least 6 characters");
+        return;
+      }
+
+      const account = await AccountService.get(id);
+      if (!account) {
+        response.status(404).send("Account not found");
+        return;
+      }
+
+      const isMatch = await bcrypt.compare(oldPassword, account.password);
+      if (!isMatch) {
+        response.status(400).send("Old password is incorrect");
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await AccountService.update(id, { password: hashedPassword });
+
+      response.send({ message: "Password changed successfully" });
+    } catch (error) {
+      response.status(500).send("Failed to change password");
+    }
+  }
+
   static login = async (request : AuthRequest , response : Response) => {
     const { email, password } = request.body
     const account = await AccountService.checkEmailIfExist(email)

@@ -18,6 +18,27 @@ export class AccountService {
     return account
   }
 
+  static async getProfile(id: string) {
+    const account = AccountModel.findById(id).select('-password');
+    return account
+  }
+
+  static async addSkill(id: string, skill: { skill: string; experience: number; proficiency: string }) {
+    return await AccountModel.findByIdAndUpdate(
+      id,
+      { $push: { skills: skill } },
+      { new: true }
+    ).select('-password');
+  }
+
+  static async removeSkill(id: string, skillId: string) {
+    return await AccountModel.findByIdAndUpdate(
+      id,
+      { $pull: { skills: { _id: skillId } } },
+      { new: true }
+    ).select('-password');
+  }
+
   static async delete(id : string) {
     const account = AccountModel.findByIdAndDelete(id);
     return account

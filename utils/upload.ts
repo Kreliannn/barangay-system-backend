@@ -25,3 +25,6 @@ export const uploadIdImages = upload.fields([
   { name: 'idBack', maxCount: 1 },
   { name: 'idSelfie', maxCount: 1 },
 ]);
+
+// Multer middleware for single profile picture upload
+export const uploadProfilePicMiddleware = upload.single('profilePic');
