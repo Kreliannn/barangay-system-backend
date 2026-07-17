@@ -64,7 +64,38 @@ export class AccountService {
   static async checkEmailIfExist(email : string) {
     const account = AccountModel.findOne({ email });
     return account
-  } 
+  }
 
+  static async getResidentsWithSkills() {
+    const accounts = await AccountModel.find({ status: 'approved' })
+      .select('-password')
+      .lean();
+
+    return accounts.map((account) => {
+      const reviews = account.reviews || [];
+      const averageRating = reviews.length
+        ? reviews.reduce((sum, r) => sum + r.star, 0) / reviews.length
+        : 0;
+      return {
+        ...account,
+        averageRating: Math.round(averageRating * 10) / 10,
+        totalReviews: reviews.length,
+      };
+    });
+  }
+
+  static async addReview(id: string, review: {
+    user: string;
+    userProfile: string;
+    star: number;
+    skill: string;
+    message: string;
+  }) {
+    return await AccountModel.findByIdAndUpdate(
+      id,
+      { $push: { reviews: review } },
+      { new: true }
+    ).select('-password');
+  }
 
 }

@@ -266,6 +266,62 @@ export class AccountController {
     }
   }
 
+  static getResidentsWithSkills = async (_request: AuthRequest, response: Response) => {
+    try {
+      const residents = await AccountService.getResidentsWithSkills();
+      response.send(residents);
+    } catch (error) {
+      response.status(500).send("Failed to fetch residents");
+    }
+  }
+
+  static addReview = async (request: AuthRequest, response: Response) => {
+    try {
+      const { id } = request.params;
+      const { star, skill, message } = request.body;
+
+      if (!star || !skill || !message) {
+        response.status(400).send("All fields are required: star, skill, message");
+        return;
+      }
+
+      if (star < 1 || star > 5) {
+        response.status(400).send("Star rating must be between 1 and 5");
+        return;
+      }
+
+      // Get the logged-in user's info for the review
+      const reviewer = request.account;
+      if (!reviewer) {
+        response.status(401).send("User not authenticated");
+        return;
+      }
+
+      const reviewerAccount = await AccountService.get(reviewer._id);
+      if (!reviewerAccount) {
+        response.status(404).send("Reviewer not found");
+        return;
+      }
+
+      const account = await AccountService.addReview(id, {
+        user: reviewerAccount.name,
+        userProfile: reviewerAccount.profile || '',
+        star: Number(star),
+        skill,
+        message,
+      });
+
+      if (!account) {
+        response.status(404).send("Account not found");
+        return;
+      }
+
+      response.send(account);
+    } catch (error) {
+      response.status(500).send("Failed to add review");
+    }
+  }
+
   static login = async (request : AuthRequest , response : Response) => {
     const { email, password } = request.body
     const account = await AccountService.checkEmailIfExist(email)

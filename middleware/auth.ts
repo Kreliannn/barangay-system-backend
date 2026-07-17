@@ -38,7 +38,8 @@ export const authenticateJWT = async (request: AuthRequest, response: Response, 
         password: accountDoc.password,
         status :  accountDoc.status,
         idImg :  accountDoc.idImg!,
-        skills : accountDoc.skills
+        skills : accountDoc.skills,
+        reviews :  accountDoc.reviews
       };
       request.account = account;
     }

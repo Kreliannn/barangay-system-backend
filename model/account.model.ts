@@ -18,7 +18,14 @@ const AccountSchema = new Schema({
         skill  :  { type: String, required: true },
         experience :  { type: Number, required: true },
         proficiency :  { type: String, required: true },
-    }]
+    }],
+    reviews : [{
+        user :   { type: String, required: true },
+        userProfile : { type: String, required: true },
+        star  :  { type: Number, required: true },
+        skill :  { type: String, required: true },
+        message :  { type: String, required: true },
+    }],
 });
 
 export default mongoose.model('Accounts', AccountSchema)
