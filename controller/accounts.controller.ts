@@ -6,7 +6,8 @@ import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
 import bcrypt from "bcrypt";
 import { uploadToCloudinary } from "../utils/cloudinaryUpload";
-
+import { UserActivityService } from "../services/userActivity.service";
+import { formattedDate } from "../utils/customFunc";
 
 dotenv.config();
 
@@ -57,6 +58,17 @@ export class AccountController {
       response.status(500).send("Failed to fetch accounts");
     }
   }
+
+  static getActivityByResident = async (request: AuthRequest, response: Response) => {
+      try {
+        const { id } = request.params;
+        const activity = await UserActivityService.getByAccount(id);
+        response.send(activity);
+      } catch (error) {
+        response.status(500).send("Failed to fetch activity requests by resident");
+      }
+  }
+  
 
   static updateStatus = async (request: AuthRequest, response: Response) => {
     try {
@@ -153,6 +165,13 @@ export class AccountController {
         return;
       }
 
+
+      await UserActivityService.create({
+        accountId : account._id.toString(),
+        activity : "Added skills to profile",
+        date : formattedDate()
+      })
+
       response.send(account);
     } catch (error) {
       response.status(500).send("Failed to add skill");
@@ -169,6 +188,12 @@ export class AccountController {
         response.status(404).send("Account not found");
         return;
       }
+
+      await UserActivityService.create({
+        accountId : account._id.toString(),
+        activity : "Removed skills to profile",
+        date : formattedDate()
+      })
 
       response.send(account);
     } catch (error) {
@@ -190,6 +215,12 @@ export class AccountController {
         response.status(404).send("Account not found");
         return;
       }
+
+      await UserActivityService.create({
+        accountId : account._id.toString(),
+        activity : "Changed Account profile picture",
+        date : formattedDate()
+      })
 
       const profilePicUrl = await uploadToCloudinary(request.file.path);
 
@@ -223,6 +254,12 @@ export class AccountController {
         response.status(404).send("Account not found");
         return;
       }
+
+      await UserActivityService.create({
+        accountId : account._id.toString(),
+        activity : "Update User Info",
+        date : formattedDate()
+      })
 
       response.send(account);
     } catch (error) {
@@ -259,6 +296,12 @@ export class AccountController {
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await AccountService.update(id, { password: hashedPassword });
+
+       await UserActivityService.create({
+        accountId : account._id.toString(),
+        activity : "Changed Password",
+        date : formattedDate()
+      })
 
       response.send({ message: "Password changed successfully" });
     } catch (error) {
@@ -315,6 +358,13 @@ export class AccountController {
         response.status(404).send("Account not found");
         return;
       }
+
+
+       await UserActivityService.create({
+        accountId : account._id.toString(),
+        activity : "Place a Review to other Resident",
+        date : formattedDate()
+      })
 
       response.send(account);
     } catch (error) {

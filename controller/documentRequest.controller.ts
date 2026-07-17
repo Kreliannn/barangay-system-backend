@@ -2,6 +2,8 @@ import { Response } from "express";
 import { AuthRequest } from "../types/request.type";
 import { DocumentRequestService } from "../services/documentRequest.service";
 import { documentRequestInterfaceInput } from "../types/documentRequest";
+import { UserActivityService } from "../services/userActivity.service";
+import { formattedDate } from "../utils/customFunc";
 
 export class DocumentRequestController {
 
@@ -9,6 +11,15 @@ export class DocumentRequestController {
     try {
       const documentData: documentRequestInterfaceInput = request.body;
       const document = await DocumentRequestService.create(documentData);
+
+      const account = request.account
+
+      await UserActivityService.create({
+        accountId : account!._id.toString(),
+        activity : `Request Document ${documentData.document}`,
+        date : formattedDate()
+      })
+
       response.status(201).send(document);
     } catch (error) {
       response.status(500).send("Failed to create document request");
@@ -130,10 +141,19 @@ export class DocumentRequestController {
 
 
 
-      static  bookingPayment = async (request : AuthRequest , response : Response) => {
+    static  onlinePayment = async (request : AuthRequest , response : Response) => {
         try{
             const { sender,  documentID, amount, refId  } = request.body
             await DocumentRequestService.updatePayment(documentID, true)
+
+            const account = request.account
+
+            await UserActivityService.create({
+              accountId : account!._id.toString(),
+              activity : `online payment`,
+              date : formattedDate()
+            })
+
             response.send("success")
         } catch(e) {
             console.log(e)

@@ -8,7 +8,7 @@ export class DocumentRequestService {
   }
 
   static async getAll(filter: Record<string, any> = {}) {
-    const documents = DocumentRequestModel.find(filter).populate("resident", "-password");
+    const documents = DocumentRequestModel.find(filter).populate("resident", "-password").sort({ _id: -1 });
     return documents
   }
 
@@ -35,7 +35,7 @@ export class DocumentRequestService {
   }
 
   static async getByResident(residentId: string) {
-    const documents = DocumentRequestModel.find({ resident: residentId }).populate("resident", "-password");
+    const documents = DocumentRequestModel.find({ resident: residentId }).populate("resident", "-password").sort({ _id: -1 });
     return documents
   }
 

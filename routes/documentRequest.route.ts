@@ -4,7 +4,7 @@ import { authenticateJWT } from "../middleware/auth";
 
 const route = Router()
 
-route.post("/", DocumentRequestController.create)
+route.post("/", authenticateJWT, DocumentRequestController.create)
 route.get("/", DocumentRequestController.getAll)
 route.get("/:id", DocumentRequestController.get)
 route.patch("/:id/status", DocumentRequestController.updateStatus)
