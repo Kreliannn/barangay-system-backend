@@ -127,4 +127,17 @@ export class DocumentRequestController {
       response.status(500).send("Failed to delete document request");
     }
   }
+
+
+
+      static  bookingPayment = async (request : AuthRequest , response : Response) => {
+        try{
+            const { sender,  documentID, amount, refId  } = request.body
+            await DocumentRequestService.updatePayment(documentID, true)
+            response.send("success")
+        } catch(e) {
+            console.log(e)
+            response.status(500).send("error accour") 
+        }
+    }
 }
