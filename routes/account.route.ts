@@ -5,6 +5,10 @@ import { authenticateJWT } from "../middleware/auth";
 
 const route = Router()
 
+
+route.post("/ai", AccountController.aiChatBot)
+route.get("/ai-context", AccountController.getAiContext)
+route.put("/ai-context", AccountController.upsertAiContext)
 route.post("/", uploadIdImages, AccountController.register)
 route.post("/login", AccountController.login)
 route.get("/", AccountController.getAll)
@@ -19,5 +23,6 @@ route.post("/:id/reviews", authenticateJWT, AccountController.addReview)
 route.put("/:id/profile-pic", authenticateJWT, uploadProfilePicMiddleware, AccountController.uploadProfilePic)
 route.patch("/:id/info", authenticateJWT, AccountController.updateInfo)
 route.patch("/:id/password",authenticateJWT, AccountController.changePassword)
+
 
 export default route

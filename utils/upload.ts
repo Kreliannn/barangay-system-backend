@@ -28,3 +28,21 @@ export const uploadIdImages = upload.fields([
 
 // Multer middleware for single profile picture upload
 export const uploadProfilePicMiddleware = upload.single('profilePic');
+
+// Multer middleware for business document uploads
+export const uploadBusinessFiles = upload.fields([
+  { name: 'logo', maxCount: 1 },
+  { name: 'document', maxCount: 1 },
+  { name: 'images', maxCount: 10 },
+]);
+
+// Multer middleware for adding images to an existing business
+export const uploadBusinessImages = upload.fields([
+  { name: 'images', maxCount: 10 },
+]);
+
+// Multer middleware for updating business logo
+export const uploadBusinessLogo = upload.single('logo');
+
+// Multer middleware for updating business document
+export const uploadBusinessDocument = upload.single('document');

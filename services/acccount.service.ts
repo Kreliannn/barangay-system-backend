@@ -98,4 +98,12 @@ export class AccountService {
     ).select('-password');
   }
 
+
+  static async getAccountsForAI() {
+    const accounts = await AccountModel.find()
+      .select("name email contact skills")
+      .lean();
+
+      return JSON.stringify(accounts, null, 2);
+  }
 }

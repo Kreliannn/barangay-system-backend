@@ -6,7 +6,7 @@ import routes from "./routes/route"
 import cors from "cors"
 import dotenv from 'dotenv';
 import 'dotenv/config';
-
+import documentRequestModel from './model/documentRequest.model';
 
 dotenv.config();
 
@@ -24,6 +24,26 @@ app.use(routes)
 mongoose.connect(mongodb_uri)
 
 app.get('/', async (request: Request, response: Response) => {
+  response.send("working server...........")
+});
+
+
+app.get('/test', async (request: Request, response: Response) => {
+
+  const prices = [30, 45, 50, 80];
+
+  const documents = await documentRequestModel.find({
+    price: { $exists: false }
+  });
+
+  for (const doc of documents) {
+    const randomPrice = prices[Math.floor(Math.random() * prices.length)];
+
+    doc.price = randomPrice;
+    await doc.save();
+  }
+
+
   response.send("working server...........")
 });
 

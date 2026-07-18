@@ -8,6 +8,9 @@ import bcrypt from "bcrypt";
 import { uploadToCloudinary } from "../utils/cloudinaryUpload";
 import { UserActivityService } from "../services/userActivity.service";
 import { formattedDate } from "../utils/customFunc";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { SystemInfoService } from "../services/systemInfo.service";
+import { BusinessService } from "../services/business.service";
 
 dotenv.config();
 
@@ -400,5 +403,95 @@ export class AccountController {
   }
 
 
+  static aiChatBot = async (request: AuthRequest, response: Response) => {
+    try {
+      const { input, convo } = request.body;
+
+      const systeminfo = await SystemInfoService.getFirst()
+
+      const residentsInfo = await AccountService.getAccountsForAI()
+
+      const businessInfo = await BusinessService.getBusinessForAI()
+
+      console.log(businessInfo)
+
+
+      const genAI = new GoogleGenerativeAI("AQ.Ab8RN6KC25KNFm1OugVn_iOHeJSN3XLPHObuYqvcnBX-7zhzkA");
+
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  
+      const prompt = `
+
+
+      You are an AI assistant for the Barangay Information System.
+
+       all resdient information and all business information is provided. respond to user question based on the data provided.
+       
+
+        If a question is unrelated to the system
+
+        "I'm here to assist with barangay-related questions, including information about barangay services, office hours, announcements, registered residents and their skills, and registered businesses. I can't answer questions outside of these topics."
+
+        Be friendly, concise, and accurate.
+
+            barangayInfo
+            ${systeminfo}
+
+            residentsInfo
+            ${residentsInfo}
+
+            businessInfo
+            ${businessInfo}
+
+            Previous Conversation:
+            ${Array.isArray(convo) ? convo.join("\n") : ""}
+
+            User input/user qeustion:
+            ${input}
+       `;
+
+      const result = await model.generateContent(prompt);
+      const aiReply = result.response.text();
+
+      response.send(aiReply)
+
+    } catch (error) {
+      console.error(error);
+
+      response.status(500).json({
+        success: false,
+        message: "Failed to generate response",
+      });
+    }
+  };
+
+  // ── AI Context ──────────────────────────────────────────────────
+
+  static getAiContext = async (_request: AuthRequest, response: Response) => {
+    try {
+     
+      const systemInfo = await SystemInfoService.getFirst();
+    
+      response.send(systemInfo || { aiContext: "" });
+    } catch (error) {
+      response.status(500).send("Failed to fetch AI context");
+    }
+  }
+
+  static upsertAiContext = async (request: AuthRequest, response: Response) => {
+    try {
+      const { aiContext } = request.body;
+
+      if (!aiContext || !aiContext.trim()) {
+        response.status(400).send("AI context is required");
+        return;
+      }
+
+      const systemInfo = await SystemInfoService.upsert({ aiContext });
+      response.send(systemInfo);
+    } catch (error) {
+      response.status(500).send("Failed to save AI context");
+    }
+  }
 
 }
