@@ -5,6 +5,7 @@ export interface documentRequestInterfaceInput {
     document: string,
     status: string,
     isPaid : boolean,
+    price : number,
     
     fullName : string | null,
     contact: string | null,

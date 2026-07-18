@@ -237,9 +237,9 @@ export class AccountController {
   static updateInfo = async (request: AuthRequest, response: Response) => {
     try {
       const { id } = request.params;
-      const { name, address, contact } = request.body;
+      const { name, address, contact, gender, dateOfBirth, civilStatus, purok, voterStatus, houseHoldNumber } = request.body;
 
-      if (!name && !address && !contact) {
+      if (!name && !address && !contact && !gender && !dateOfBirth && !civilStatus && !purok && !voterStatus && !houseHoldNumber) {
         response.status(400).send("No fields to update");
         return;
       }
@@ -248,6 +248,12 @@ export class AccountController {
       if (name) updateData.name = name;
       if (address) updateData.address = address;
       if (contact) updateData.contact = contact;
+      if (gender) updateData.gender = gender;
+      if (dateOfBirth) updateData.dateOfBirth = dateOfBirth;
+      if (civilStatus) updateData.civilStatus = civilStatus;
+      if (purok) updateData.purok = purok;
+      if (voterStatus) updateData.voterStatus = voterStatus;
+      if (houseHoldNumber) updateData.houseHoldNumber = houseHoldNumber;
 
       const account = await AccountService.update(id, updateData);
       if (!account) {

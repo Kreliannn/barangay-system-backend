@@ -6,6 +6,7 @@ const DocumentSchema = new Schema({
     document: { type: String, required: true },
     status: { type: String, required: true },
     isPaid : { type: Boolean, required: true },
+    price : { type: Number, required: true },
 
     fullName : { type: String, required: false },
     contact: { type: String, required: false },

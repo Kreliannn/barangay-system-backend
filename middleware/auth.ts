@@ -39,7 +39,13 @@ export const authenticateJWT = async (request: AuthRequest, response: Response, 
         status :  accountDoc.status,
         idImg :  accountDoc.idImg!,
         skills : accountDoc.skills,
-        reviews :  accountDoc.reviews
+        reviews :  accountDoc.reviews,
+        gender: accountDoc.gender,
+        dateOfBirth: accountDoc.dateOfBirth,
+        civilStatus: accountDoc.civilStatus,
+        purok: accountDoc.purok,
+        voterStatus: accountDoc.voterStatus,
+        houseHoldNumber: accountDoc.houseHoldNumber,
       };
       request.account = account;
     }

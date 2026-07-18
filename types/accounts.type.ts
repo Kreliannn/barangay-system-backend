@@ -4,6 +4,14 @@ export interface accountInterfaceInput {
     address: string,
     contact: string,
     email: string,
+
+    gender: string,
+    dateOfBirth: string,
+    civilStatus: string,
+    purok: string,
+    voterStatus: string,
+    houseHoldNumber: string,
+
     password: string,
     status :  string,
     idImg : {

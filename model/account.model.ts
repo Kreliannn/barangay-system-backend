@@ -7,6 +7,14 @@ const AccountSchema = new Schema({
     contact: { type: String, required: true },
     address: { type: String, required: true },
     email: { type: String, required: true },
+
+    gender: { type: String, required: true },
+    dateOfBirth: { type: String, required: true },
+    civilStatus: { type: String, required: true },
+    purok: { type: String, required: true },
+    voterStatus: { type: String, required: true },
+    houseHoldNumber: { type: String, required: true },
+
     password: { type: String, required: true },
     status :  { type: String, required: true },
     idImg : {
