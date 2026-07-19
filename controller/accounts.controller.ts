@@ -410,10 +410,11 @@ export class AccountController {
       const systeminfo = await SystemInfoService.getFirst()
 
       const residentsInfo = await AccountService.getAccountsForAI()
+        console.log(residentsInfo)
 
       const businessInfo = await BusinessService.getBusinessForAI()
 
-      console.log(businessInfo)
+    
 
 
       const genAI = new GoogleGenerativeAI("AQ.Ab8RN6KC25KNFm1OugVn_iOHeJSN3XLPHObuYqvcnBX-7zhzkA");
@@ -454,6 +455,97 @@ export class AccountController {
       const aiReply = result.response.text();
 
       response.send(aiReply)
+
+    } catch (error) {
+      console.error(error);
+
+      response.status(500).json({
+        success: false,
+        message: "Failed to generate response",
+      });
+    }
+  };
+
+
+
+
+  static aiSuggestions = async (request: AuthRequest, response: Response) => {
+    try {
+      
+      const residentsInfo = await AccountService.getAccountsForAI()
+
+
+      const test = `
+      Community Barbering Workshop
+
+Title: Community Barbering Skills Workshop
+
+Reason:
+The resident data shows that two individuals have experience in barbering, making it one of the strongest shared skills in the barangay. This presents an opportunity to pass on their knowledge to unemployed youth and interested residents.
+
+Recommendation:
+Organize a free weekend barbering workshop where experienced residents teach basic haircutting techniques, proper sanitation, and customer service. The program can also introduce participants to the basics of starting a small barbering business.
+
+Implementation:
+Invite the two experienced barbers to serve as volunteer trainers. Hold four weekly training sessions at the barangay hall and provide basic barbering tools for practice. Conclude the program with a free haircut service for senior citizens and children to give participants real-world experience.
+
+Expected Benefits:
+The program can create additional livelihood opportunities, encourage entrepreneurship, improve access to affordable grooming services, and strengthen community participation.
+      
+      `
+
+/*
+      const genAI = new GoogleGenerativeAI("AQ.Ab8RN6KC25KNFm1OugVn_iOHeJSN3XLPHObuYqvcnBX-7zhzkA");
+
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  
+      const prompt = `
+
+       You are an AI advisor for a Philippine barangay.
+
+        Analyze the resident skills provided below.
+
+        Generate ONLY ONE recommendation each time.
+
+        IMPORTANT RULES:
+
+        - Do not always choose the most common skill.
+        - Randomly select one meaningful opportunity from the data.
+        - Sometimes recommend a training program.
+        - Sometimes recommend a community event.
+        - Sometimes recommend a livelihood project.
+        - Sometimes recommend a volunteer initiative.
+        - Sometimes recommend a partnership with TESDA, schools, or local businesses.
+        - Sometimes recommend helping residents without registered skills.
+        - Avoid repeating the exact same recommendation if there are multiple possible opportunities.
+        - Base your recommendation on the resident data.
+
+        Your response should contain:
+
+        Title
+
+        Reason
+
+        Recommendation
+
+        Implementation
+
+        Expected Benefits
+
+        Keep the response between 150 and 250 words.
+
+        Resident Data:
+
+
+
+              ${residentsInfo}
+
+       `;
+
+      const result = await model.generateContent(prompt);
+      const aiReply = result.response.text(); */
+
+      response.send(test)
 
     } catch (error) {
       console.error(error);

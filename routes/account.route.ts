@@ -7,6 +7,7 @@ const route = Router()
 
 
 route.post("/ai", AccountController.aiChatBot)
+route.post("/ai-suggestion", AccountController.aiSuggestions)
 route.get("/ai-context", AccountController.getAiContext)
 route.put("/ai-context", AccountController.upsertAiContext)
 route.post("/", uploadIdImages, AccountController.register)
