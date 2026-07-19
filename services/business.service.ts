@@ -41,10 +41,12 @@ export class BusinessService {
 
 
   static async getBusinessForAI() {
-    return await BusinessModel.find({
-      status: "approved"
-    })
+
+    const business = await BusinessModel.find({
+      status: "approved"})
       .select("businessName type businessInfo address status")
-      .lean();
+      .lean()
+
+      return JSON.stringify(business, null, 2);
   }
 }
