@@ -28,7 +28,7 @@ export class SystemInfoService {
 
   static async getFirst() {
     const info = await SystemInfoModel.findOne().lean();
-    return info
+    return JSON.stringify(info);
   }
 
   static async upsert(data: systemInfoInterfaceInput) {

@@ -26,6 +26,8 @@ const AccountSchema = new Schema({
         skill  :  { type: String, required: true },
         experience :  { type: Number, required: true },
         proficiency :  { type: String, required: true },
+        availability :  { type: String, required: true },
+        services :  [{ type: String, required: true }],
     }],
     reviews : [{
         user :   { type: String, required: true },

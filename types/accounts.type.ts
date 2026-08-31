@@ -23,6 +23,8 @@ export interface accountInterfaceInput {
         skill  :  string,
         experience : number,
         proficiency :  string,
+        availability :  string,
+        services :  string[],
     }[],
     reviews : {
         user :   string,

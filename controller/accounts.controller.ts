@@ -11,6 +11,7 @@ import { formattedDate } from "../utils/customFunc";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { SystemInfoService } from "../services/systemInfo.service";
 import { BusinessService } from "../services/business.service";
+import { WorkService } from "../services/work.service";
 
 dotenv.config();
 
@@ -150,10 +151,10 @@ export class AccountController {
   static addSkill = async (request: AuthRequest, response: Response) => {
     try {
       const { id } = request.params;
-      const { skill, experience, proficiency } = request.body;
+      const { skill, experience, proficiency, availability, services } = request.body;
 
-      if (!skill || experience === undefined || !proficiency) {
-        response.status(400).send("All fields are required: skill, experience, proficiency");
+      if (!skill || experience === undefined || !proficiency || !availability || !services || services.length === 0) {
+        response.status(400).send("All fields are required: skill, experience, proficiency, availability, services");
         return;
       }
 
@@ -161,6 +162,8 @@ export class AccountController {
         skill,
         experience: Number(experience),
         proficiency,
+        availability,
+        services,
       });
 
       if (!account) {
@@ -201,6 +204,29 @@ export class AccountController {
       response.send(account);
     } catch (error) {
       response.status(500).send("Failed to remove skill");
+    }
+  }
+
+  static updateSkillAvailability = async (request: AuthRequest, response: Response) => {
+    try {
+      const { id, skillId } = request.params;
+      const { availability } = request.body;
+
+      if (!availability || !["available", "busy"].includes(availability)) {
+        response.status(400).send("Availability must be 'available' or 'busy'");
+        return;
+      }
+
+      const account = await AccountService.updateSkillAvailability(id, skillId, availability);
+
+      if (!account) {
+        response.status(404).send("Account not found");
+        return;
+      }
+
+      response.send(account);
+    } catch (error) {
+      response.status(500).send("Failed to update skill availability");
     }
   }
 
@@ -330,7 +356,7 @@ export class AccountController {
   static addReview = async (request: AuthRequest, response: Response) => {
     try {
       const { id } = request.params;
-      const { star, skill, message } = request.body;
+      const { star, skill, message, workId } = request.body;
 
       if (!star || !skill || !message) {
         response.status(400).send("All fields are required: star, skill, message");
@@ -368,6 +394,9 @@ export class AccountController {
         return;
       }
 
+      if (workId) {
+        await WorkService.updateStatus(workId, "completed");
+      }
 
        await UserActivityService.create({
         accountId : account._id.toString(),
@@ -378,6 +407,47 @@ export class AccountController {
       response.send(account);
     } catch (error) {
       response.status(500).send("Failed to add review");
+    }
+  }
+
+  static bookWork = async (request: AuthRequest, response: Response) => {
+    try {
+      const { client, worker, skill, service, description } = request.body;
+
+      console.log("run")
+      if (!client || !worker || !skill || !service || !description) {
+        response.status(400).send("All fields are required: client, worker, skill, service, description");
+        return;
+      }
+
+      const workerAccount = await AccountService.get(worker);
+      if (!workerAccount) {
+        response.status(404).send("Worker not found");
+        return;
+      }
+
+      const skillData = workerAccount.skills?.find((s) => s.skill === skill);
+      if (!skillData) {
+        response.status(400).send("Skill not found for this worker");
+        return;
+      }
+      if (skillData.availability !== "available") {
+        response.status(400).send("This skill is currently busy and cannot be booked");
+        return;
+      }
+
+      const work = await WorkService.create({
+        client,
+        worker,
+        status: "pending",
+        service: `${skill} - ${service}`,
+        description,
+        date: formattedDate(),
+      });
+
+      response.send(work);
+    } catch (error) {
+      response.status(500).send("Failed to book service");
     }
   }
 
@@ -409,8 +479,10 @@ export class AccountController {
 
       const systeminfo = await SystemInfoService.getFirst()
 
+         
+
       const residentsInfo = await AccountService.getAccountsForAI()
-        console.log(residentsInfo)
+    
 
       const businessInfo = await BusinessService.getBusinessForAI()
 
@@ -435,13 +507,13 @@ export class AccountController {
 
         Be friendly, concise, and accurate.
 
-            barangayInfo
+            barangayInfo: (information about barangay)
             ${systeminfo}
 
-            residentsInfo
+            residentsInfo (information about resident)
             ${residentsInfo}
 
-            businessInfo
+            businessInfo (information about business)
             ${businessInfo}
 
             Previous Conversation:
@@ -453,6 +525,9 @@ export class AccountController {
 
       const result = await model.generateContent(prompt);
       const aiReply = result.response.text();
+
+
+      console.log(prompt)
 
       response.send(aiReply)
 
@@ -494,7 +569,7 @@ The program can create additional livelihood opportunities, encourage entreprene
       
       `
 
-/*
+
       const genAI = new GoogleGenerativeAI("AQ.Ab8RN6KC25KNFm1OugVn_iOHeJSN3XLPHObuYqvcnBX-7zhzkA");
 
       const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -543,9 +618,9 @@ The program can create additional livelihood opportunities, encourage entreprene
        `;
 
       const result = await model.generateContent(prompt);
-      const aiReply = result.response.text(); */
+      const aiReply = result.response.text(); 
 
-      response.send(test)
+      response.send(aiReply)
 
     } catch (error) {
       console.error(error);

@@ -5,7 +5,7 @@ import { authenticateJWT } from "../middleware/auth";
 
 const route = Router()
 
-
+route.post("/book", authenticateJWT, AccountController.bookWork)
 route.post("/ai", AccountController.aiChatBot)
 route.post("/ai-suggestion", AccountController.aiSuggestions)
 route.get("/ai-context", AccountController.getAiContext)
@@ -19,8 +19,10 @@ route.patch("/:id/status", AccountController.updateStatus)
 route.put("/:id/resubmit", uploadIdImages, AccountController.resubmitImages)
 route.get("/:id",authenticateJWT, AccountController.getProfile)
 route.post("/:id/skills", authenticateJWT, AccountController.addSkill)
+route.patch("/:id/skills/:skillId", authenticateJWT, AccountController.updateSkillAvailability)
 route.delete("/:id/skills/:skillId", authenticateJWT, AccountController.removeSkill)
 route.post("/:id/reviews", authenticateJWT, AccountController.addReview)
+
 route.put("/:id/profile-pic", authenticateJWT, uploadProfilePicMiddleware, AccountController.uploadProfilePic)
 route.patch("/:id/info", authenticateJWT, AccountController.updateInfo)
 route.patch("/:id/password",authenticateJWT, AccountController.changePassword)

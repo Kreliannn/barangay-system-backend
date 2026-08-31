@@ -24,6 +24,18 @@ export interface documentRequestInterfaceInput {
     businessAddress : string | null,
     businessType : string | null,
     businessNature : string | null,
+
+
+    
+    sqrmtr : number | null,
+    partner :string | null,
+    child :string | null,
+    Purpose :string | null,
+    Activity :string | null,
+
+    age : number | null,
+    monthlyIncome : number | null,
+    monthlyExpences : number | null,
 }
 
 export interface documentRequestInterface {
@@ -50,4 +62,16 @@ export interface documentRequestInterface {
     businessAddress : string | null,
     businessType : string | null,
     businessNature : string | null,
+
+
+
+    sqrmtr : number | null,
+    partner :string | null,
+    child :string | null,
+    Purpose :string | null,
+    Activity :string | null,
+
+    age : number | null,
+    monthlyIncome : number | null,
+    monthlyExpences : number | null,
 }

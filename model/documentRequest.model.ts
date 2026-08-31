@@ -25,7 +25,17 @@ const DocumentSchema = new Schema({
     businessAddress : { type: String, required: false },
     businessType : { type: String, required: false },
     businessNature : { type: String, required: false },
-   
+
+
+    sqrmtr : { type: Number, required: false },
+    partner : { type: String, required: false },
+    child : { type: String, required: false },
+    Purpose : { type: String, required: false },
+    Activity : { type: String, required: false },
+
+    age : { type: Number, required: false },
+    monthlyIncome : { type: Number, required: false },
+    monthlyExpences : { type: Number, required: false },
 });
 
 export default mongoose.model('Documents', DocumentSchema)

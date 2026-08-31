@@ -23,11 +23,19 @@ export class AccountService {
     return account
   }
 
-  static async addSkill(id: string, skill: { skill: string; experience: number; proficiency: string }) {
+  static async addSkill(id: string, skill: { skill: string; experience: number; proficiency: string; availability: string; services: string[] }) {
     return await AccountModel.findByIdAndUpdate(
       id,
       { $push: { skills: skill } },
       { new: true }
+    ).select('-password');
+  }
+
+  static async updateSkillAvailability(id: string, skillId: string, availability: string) {
+    return await AccountModel.findByIdAndUpdate(
+      id,
+      { $set: { "skills.$[elem].availability": availability } },
+      { arrayFilters: [{ "elem._id": skillId }], new: true }
     ).select('-password');
   }
 
