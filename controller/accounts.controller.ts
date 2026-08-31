@@ -482,7 +482,6 @@ export class AccountController {
          
 
       const residentsInfo = await AccountService.getAccountsForAI()
-    
 
       const businessInfo = await BusinessService.getBusinessForAI()
 
@@ -631,6 +630,10 @@ The program can create additional livelihood opportunities, encourage entreprene
       });
     }
   };
+
+
+
+
 
   // ── AI Context ──────────────────────────────────────────────────
 
